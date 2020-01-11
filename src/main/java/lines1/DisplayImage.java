@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.videoio.VideoCapture;
 
 public class DisplayImage
 {
@@ -55,14 +56,14 @@ public class DisplayImage
     static Mat processImage(Mat original)
     {   
         Mat filtered = new Mat();
-        Mat blured = new Mat();
+        Mat blurred = new Mat();
         Mat hsv = new Mat();
 
         // blur image
-        Imgproc.blur(original, blured, BLUR_SIZE);
+        Imgproc.blur(original, blurred, BLUR_SIZE);
 
         //convert image to HSV color space and find green
-        Imgproc.cvtColor(blured, hsv, Imgproc.COLOR_BGR2HSV);
+        Imgproc.cvtColor(blurred, hsv, Imgproc.COLOR_BGR2HSV);
         Scalar minGreen = new Scalar(30, 100, 50);
         Scalar maxGreen = new Scalar(90, 255, 255);
         Core.inRange(hsv, minGreen, maxGreen, filtered);
@@ -99,8 +100,21 @@ public class DisplayImage
 
     public static void main(String[] args)
     {
-        System.out.println(args[0]);
-        Mat m = processImage(Imgcodecs.imread(args[0]));
+        Mat m;
+        if (args.length == 0)
+        {
+            VideoCapture capture = new VideoCapture(1);
+            m = new Mat();
+            if (!capture.read(m))
+            {
+                System.out.println("Error");
+                return;
+            }
+        }
+        else{
+            m = Imgcodecs.imread(args[0]);
+        }
+        m = processImage(m);
         BufferedImage bi = Mat2BufferedImage(m);
         displayImage(bi);
     }
