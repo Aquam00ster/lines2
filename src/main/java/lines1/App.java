@@ -10,6 +10,11 @@ import org.opencv.core.*;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.vision.VisionPipeline;
+import edu.wpi.first.vision.VisionThread;
+
 public class App {
     static
     {
@@ -53,19 +58,36 @@ public class App {
         return image;
     }
 
-    public static void main(String[] args) {
+    static class MyPipeline implements VisionPipeline {
+        public Mat m;
+
+        @Override
+        public void process(Mat image) {
+            FindShapes.Result result = FindShapes.processImage(image);
+            m = result.display;
+            System.out.println(result.contourAmount);
+        }
+
+    }
+
+    static Mat m = null;
+    public static void main(String[] args) throws Exception {
         App app = new App();
 
-        Mat m;
-        VideoCapture capture = new VideoCapture(1);
-        //capture.set(Videoio.CAP_PROP_EXPOSURE,-10);
-        m = new Mat();
-        while (capture.read(m))
+        UsbCamera usbCamera = CameraServer.getInstance().startAutomaticCapture(0);
+        MyPipeline pipeline = new MyPipeline();
+        VisionThread vt = new VisionThread(usbCamera, pipeline, p -> {
+            m = p.m;
+        });
+        vt.start();
+
+        while (true)
         {
-            m = FindShapes.processImage(m);
+            if (m != null) {
             BufferedImage bi = Mat2BufferedImage(m);
             app.displayImage(bi);
+            }
+            Thread.sleep(50);
         }
-        
     }
 }
