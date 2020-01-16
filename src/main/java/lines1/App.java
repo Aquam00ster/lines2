@@ -7,12 +7,8 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.image.*;
 import org.opencv.core.*;
-import org.opencv.videoio.VideoCapture;
-import org.opencv.videoio.Videoio;
-
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.vision.VisionPipeline;
 import edu.wpi.first.vision.VisionThread;
 
 public class App {
@@ -58,24 +54,12 @@ public class App {
         return image;
     }
 
-    static class MyPipeline implements VisionPipeline {
-        public Mat m;
-
-        @Override
-        public void process(Mat image) {
-            FindShapes.Result result = FindShapes.processImage(image);
-            m = result.display;
-            System.out.println(result.contourAmount);
-        }
-
-    }
-
     static Mat m = null;
     public static void main(String[] args) throws Exception {
         App app = new App();
 
         UsbCamera usbCamera = CameraServer.getInstance().startAutomaticCapture(0);
-        MyPipeline pipeline = new MyPipeline();
+        FindShapesPipeline pipeline = new FindShapesPipeline();
         VisionThread vt = new VisionThread(usbCamera, pipeline, p -> {
             m = p.m;
         });

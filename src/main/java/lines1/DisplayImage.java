@@ -3,14 +3,9 @@ package lines1;
 import lines1.FindShapes;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.*;
-import org.opencv.imgproc.Imgproc;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.image.*;
-import java.util.ArrayList;
-import java.util.List;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.videoio.VideoCapture;
 
 public class DisplayImage
