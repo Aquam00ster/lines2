@@ -10,6 +10,6 @@ class FindShapesPipeline implements VisionPipeline {
     public void process(Mat image) {
         FindShapes.Result result = FindShapes.processImage(image);
         m = result.display;
-        System.out.println(result.contourAmount);
+        System.out.println(result.contours.length);
     }
 }

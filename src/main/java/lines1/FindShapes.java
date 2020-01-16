@@ -11,7 +11,6 @@ public class FindShapes
 {
     static class Result {
         public Mat display;
-        public int contourAmount;
         public Point[][] contours;
     }
     private static final Size BLUR_SIZE = new Size(3,3);
@@ -38,7 +37,6 @@ public class FindShapes
         Imgproc.findContours(filtered, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_NONE);
 
         //System.out.println("contours count = " + contours.size());
-        result.contourAmount = contours.size();
         result.contours = new Point[contours.size()][];
         for (int i = 0; i < contours.size(); i++) {
             //approximate contours
@@ -51,7 +49,6 @@ public class FindShapes
             for (int j = 0; j < c.length; j++)
             {
                 System.out.println("x = " + c[j].x + " y = " + c[j].y);
-                // TODO save to object
            
             }*/
             result.contours[i] = c;
