@@ -3,12 +3,69 @@
  */
 package lines1;
 
+import java.awt.*;
+import javax.swing.*;
+import java.awt.image.*;
+import org.opencv.core.*;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
+
 public class App {
-    public String getGreeting() {
-        return "Hello world.";
+    static
+    {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+
+    private JFrame frame;
+    private JLabel lbl;
+
+    public App()
+    {
+        frame = new JFrame();
+        frame.setLayout(new FlowLayout());        
+        frame.setSize(350, 250);     
+        lbl = new JLabel();
+        frame.add(lbl);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public void displayImage(Image img)
+    {   
+        ImageIcon icon = new ImageIcon(img);
+        frame.setSize(img.getWidth(null)+50, img.getHeight(null)+50);     
+        lbl.setIcon(icon);
+    }
+
+    public static BufferedImage Mat2BufferedImage(Mat m)
+    {
+        int type = BufferedImage.TYPE_BYTE_GRAY;
+        if (m.channels() > 1)
+        {
+            type = BufferedImage.TYPE_3BYTE_BGR;
+        }
+        int bufferSize = m.channels()*m.cols()*m.rows();
+        byte[] b = new byte[bufferSize];
+        m.get(0, 0, b); // get all the pixels
+        BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
+        final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+        System.arraycopy(b, 0, targetPixels, 0, b.length);  
+        return image;
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        App app = new App();
+
+        Mat m;
+        VideoCapture capture = new VideoCapture(1);
+        //capture.set(Videoio.CAP_PROP_EXPOSURE,-10);
+        m = new Mat();
+        while (capture.read(m))
+        {
+            m = FindShapes.processImage(m);
+            BufferedImage bi = Mat2BufferedImage(m);
+            app.displayImage(bi);
+        }
+        
     }
 }

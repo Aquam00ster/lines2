@@ -55,7 +55,7 @@ public class DisplayImage
         Mat m;
         if (args.length == 0)
         {
-            VideoCapture capture = new VideoCapture(0);
+            VideoCapture capture = new VideoCapture(1);
             m = new Mat();
             if (!capture.read(m))
             {

@@ -38,6 +38,13 @@ task runDisplay(type:JavaExec) {
     environment "PATH", System.getenv('PATH') + System.getProperty("path.separator") + "$buildDir/tmp/jniExtractDir"
 }
 
+task runStream(type:JavaExec) {
+    dependsOn classes //, extractTestJNI
+    main = 'lines1.App'
+    classpath = sourceSets.main.runtimeClasspath
+    environment "PATH", System.getenv('PATH') + System.getProperty("path.separator") + "$buildDir/tmp/jniExtractDir"
+}
+
 test {
     // Use junit platform for unit tests
     useJUnitPlatform()
