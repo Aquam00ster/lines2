@@ -58,7 +58,8 @@ public class App {
     public static void main(String[] args) throws Exception {
         App app = new App();
 
-        UsbCamera usbCamera = CameraServer.getInstance().startAutomaticCapture(0);
+        UsbCamera usbCamera = CameraServer.getInstance().startAutomaticCapture(1);
+        usbCamera.setExposureManual(-8);
         FindShapesPipeline pipeline = new FindShapesPipeline();
         VisionThread vt = new VisionThread(usbCamera, pipeline, p -> {
             m = p.m;
