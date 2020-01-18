@@ -3,12 +3,23 @@
  */
 package lines1;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
 //import static org.junit.jupiter.api.Assertions.*;
+import org.opencv.imgcodecs.Imgcodecs;
 
 class AppTest {
-    @Test void appHasAGreeting() {
-        //App classUnderTest = new App();
-        //assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+    static
+    {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+    @Test void contoursTest() {
+        Mat m = Imgcodecs.imread("images/BlueGoal-156in-Center.jpg");
+        FindShapes.Result result = FindShapes.processImage(m);
+        int c = result.contours.length;
+        assertEquals(1, c, "contours amount");
     }
 }

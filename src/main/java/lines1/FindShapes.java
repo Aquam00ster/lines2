@@ -28,7 +28,7 @@ public class FindShapes
 
         //convert image to HSV color space and find green
         Imgproc.cvtColor(blurred, hsv, Imgproc.COLOR_BGR2HSV);
-        Scalar minGreen = new Scalar(30, 100, 50);
+        Scalar minGreen = new Scalar(30, 80, 50);
         Scalar maxGreen = new Scalar(90, 255, 255);
         Core.inRange(hsv, minGreen, maxGreen, filtered);
 
