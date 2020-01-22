@@ -57,7 +57,7 @@ public class App {
     static Mat m = null;
     public static void main(String[] args) throws Exception {
         App app = new App();
-]
+        
         UsbCamera usbCamera = CameraServer.getInstance().startAutomaticCapture(1);
         //usbCamera.setExposureManual(1);
         FindShapesPipeline pipeline = new FindShapesPipeline();
