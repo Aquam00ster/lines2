@@ -12,8 +12,14 @@ public class FindShapes
     static class Result {
         public Mat display;
         public Point[][] contours;
+        public double[] target;
     }
-    private static final Size BLUR_SIZE = new Size(3,3);
+    private static final Size BLUR_SIZE = new Size(5,5);
+
+    static boolean isGoodContour(Point[] c) {
+        if (c.length < 4) return false;
+        return true;
+     }
 
     public static Result processImage(Mat original)
     {   
@@ -37,13 +43,16 @@ public class FindShapes
         Imgproc.findContours(filtered, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_NONE);
 
         //System.out.println("contours count = " + contours.size());
-        result.contours = new Point[contours.size()][];
+        List<Point[]> found_contours = new ArrayList<>();
         for (int i = 0; i < contours.size(); i++) {
             //approximate contours
             Point[] c = contours.get(i).toArray();
             MatOfPoint2f approx = new MatOfPoint2f();
             Imgproc.approxPolyDP(new MatOfPoint2f(c),approx,3,true);
             c = approx.toArray();
+            if (!isGoodContour(c)) {
+                continue;
+            }
 
             /*System.out.println("len =" + c.length);
             for (int j = 0; j < c.length; j++)
@@ -51,17 +60,42 @@ public class FindShapes
                 System.out.println("x = " + c[j].x + " y = " + c[j].y);
            
             }*/
-            result.contours[i] = c;
+            found_contours.add(c);
         }
+
+        result.contours = new Point[found_contours.size()][];
+        found_contours.toArray(result.contours);
+
 
         //visualise results
         Mat display = original;
         // Mat display = new Mat();
         // Imgproc.cvtColor(filtered, display, Imgproc.COLOR_GRAY2BGR);
-        for (int i = 0; i < contours.size(); i++) {
-            Imgproc.drawContours(display, contours, i, new Scalar(0, 0, 255), -1);
+        // for (int i = 0; i < contours.size(); i++) {
+        //   Imgproc.drawContours(display, contours, i, new Scalar(0, 0, 255), -1);
+        //}
+        List<MatOfPoint> contours2 = new ArrayList<MatOfPoint>();
+        for (int i = 0; i < found_contours.size(); i++) {
+            MatOfPoint m = new MatOfPoint(found_contours.get(i));
+            contours2.add(m);
+        }
+        for (int i = 0; i < found_contours.size(); i++) {
+            Imgproc.drawContours(display, contours2, i, new Scalar(0, 128, 255), -1);
         }
         result.display = display;
+
+        if (found_contours.size() == 1) {
+            Point[] c = found_contours.get(0);
+            int min_i = 0, max_i = 0;
+            for (int i = 1; i < c.length; i++) {
+                if (c[i].x < c[min_i].x) min_i = i;
+                if (c[i].x > c[max_i].x) max_i = i;
+            }
+            result.target = new double[2];
+            result.target[0] = (c[min_i].x + c[max_i].x) / 2;                
+            result.target[1] = (c[min_i].y + c[max_i].y) / 2;
+        }
+
         return result;
     }
 }

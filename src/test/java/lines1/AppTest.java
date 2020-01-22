@@ -4,6 +4,7 @@
 package lines1;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 import org.opencv.core.Core;
@@ -21,5 +22,8 @@ class AppTest {
         FindShapes.Result result = FindShapes.processImage(m);
         int c = result.contours.length;
         assertEquals(1, c, "contours amount");
+        assertNotNull(result.target);
+        assertEquals(result.target[0], 303, 10, "x");
+        assertEquals(result.target[1], 342, 10, "y");
     }
 }
