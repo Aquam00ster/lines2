@@ -7,7 +7,11 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.image.*;
 import org.opencv.core.*;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
+
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.UsbCameraInfo;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.vision.VisionThread;
 
@@ -54,12 +58,27 @@ public class App {
         return image;
     }
 
+    static void hackCameraExposure(int dev) {
+        if (!new VideoCapture(dev).set(Videoio.CV_CAP_PROP_EXPOSURE, -400)) {
+            System.out.println("LifeCam hack did not worked"); 
+        }
+    }
+
+    static int findLifeCam() {
+        for (UsbCameraInfo i: UsbCamera.enumerateUsbCameras()) {
+            if (i.path.contains("vid_045e")) return i.dev;
+        }
+        System.out.println("LifeCam not found");
+        return 0;
+    }
+
     static Mat m = null;
     public static void main(String[] args) throws Exception {
         App app = new App();
-        
-        UsbCamera usbCamera = CameraServer.getInstance().startAutomaticCapture(1);
-        //usbCamera.setExposureManual(1);
+
+        int dev = findLifeCam();
+        UsbCamera usbCamera = CameraServer.getInstance().startAutomaticCapture(dev);
+        hackCameraExposure(dev);
         FindShapesPipeline pipeline = new FindShapesPipeline();
         VisionThread vt = new VisionThread(usbCamera, pipeline, p -> {
             m = p.m;
