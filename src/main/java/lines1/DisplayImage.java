@@ -61,7 +61,7 @@ public class DisplayImage
         else{
             m = Imgcodecs.imread(args[0]);
         }
-        m = FindShapes.processImage(m).display;
+        m = FindShapes.processImage(m, true).display;
         BufferedImage bi = Mat2BufferedImage(m);
         displayImage(bi);
     }

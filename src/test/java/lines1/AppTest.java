@@ -19,7 +19,7 @@ class AppTest {
     }
     @Test void contoursTest() {
         Mat m = Imgcodecs.imread("images/BlueGoal-156in-Center.jpg");
-        FindShapes.Result result = FindShapes.processImage(m);
+        FindShapes.Result result = FindShapes.processImage(m, false);
         int c = result.contours.length;
         assertEquals(1, c, "contours amount");
         assertNotNull(result.target);
@@ -29,7 +29,7 @@ class AppTest {
 
     @Test void contoursTest2() {
         Mat m = Imgcodecs.imread("images/RedLoading-048in-Down.jpg");
-        FindShapes.Result result = FindShapes.processImage(m);
+        FindShapes.Result result = FindShapes.processImage(m, false);
         int c = result.contours.length;
         assertEquals(2, c, "contours amount");
         assertNotNull(result.target);

@@ -21,7 +21,7 @@ public class FindShapes
         return true;
      }
 
-    public static Result processImage(Mat original)
+    public static Result processImage(Mat original, boolean enableDisplay)
     {   
         Result result = new Result();
 
@@ -65,25 +65,24 @@ public class FindShapes
 
         result.contours = new Point[found_contours.size()][];
         found_contours.toArray(result.contours);
-
-
-        //visualise results
-        Mat display = original;
-        // Mat display = new Mat();
-        // Imgproc.cvtColor(filtered, display, Imgproc.COLOR_GRAY2BGR);
-        // for (int i = 0; i < contours.size(); i++) {
-        //   Imgproc.drawContours(display, contours, i, new Scalar(0, 0, 255), -1);
-        //}
-        List<MatOfPoint> contours2 = new ArrayList<MatOfPoint>();
-        for (int i = 0; i < found_contours.size(); i++) {
-            MatOfPoint m = new MatOfPoint(found_contours.get(i));
-            contours2.add(m);
+        if (enableDisplay){
+            //visualise results
+            Mat display = original;
+            // Mat display = new Mat();
+            // Imgproc.cvtColor(filtered, display, Imgproc.COLOR_GRAY2BGR);
+            // for (int i = 0; i < contours.size(); i++) {
+            //   Imgproc.drawContours(display, contours, i, new Scalar(0, 0, 255), -1);
+            //}
+            List<MatOfPoint> contours2 = new ArrayList<MatOfPoint>();
+            for (int i = 0; i < found_contours.size(); i++) {
+                MatOfPoint m = new MatOfPoint(found_contours.get(i));
+                contours2.add(m);
+            }
+            for (int i = 0; i < found_contours.size(); i++) {
+                Imgproc.drawContours(display, contours2, i, new Scalar(0, 128, 255), -1);
+            }
+            result.display = display;
         }
-        for (int i = 0; i < found_contours.size(); i++) {
-            Imgproc.drawContours(display, contours2, i, new Scalar(0, 128, 255), -1);
-        }
-        result.display = display;
-
         if (found_contours.size() >= 1) {
             Point[] c = found_contours.get(0);
             int min_i = 0, max_i = 0;
