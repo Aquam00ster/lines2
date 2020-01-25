@@ -84,14 +84,16 @@ public class FindShapes
         }
         result.display = display;
 
-        if (found_contours.size() == 1) {
+        if (found_contours.size() >= 1) {
             Point[] c = found_contours.get(0);
             int min_i = 0, max_i = 0;
+            //finds the min and max points in the picture
             for (int i = 1; i < c.length; i++) {
                 if (c[i].x < c[min_i].x) min_i = i;
                 if (c[i].x > c[max_i].x) max_i = i;
             }
             result.target = new double[2];
+            //finds average of x's and y's
             result.target[0] = (c[min_i].x + c[max_i].x) / 2;                
             result.target[1] = (c[min_i].y + c[max_i].y) / 2;
         }

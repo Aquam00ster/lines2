@@ -26,4 +26,14 @@ class AppTest {
         assertEquals(result.target[0], 303, 10, "x");
         assertEquals(result.target[1], 342, 10, "y");
     }
+
+    @Test void contoursTest2() {
+        Mat m = Imgcodecs.imread("images/RedLoading-048in-Down.jpg");
+        FindShapes.Result result = FindShapes.processImage(m);
+        int c = result.contours.length;
+        assertEquals(2, c, "contours amount");
+        assertNotNull(result.target);
+        assertEquals(result.target[0], 268, 10, "x");
+        assertEquals(result.target[1], 211, 10, "y");
+    }
 }
