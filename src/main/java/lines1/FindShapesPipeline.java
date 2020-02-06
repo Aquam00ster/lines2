@@ -18,10 +18,10 @@ class FindShapesPipeline implements VisionPipeline {
         m = result.display;
         //System.out.println(result.contours.length);
         if (result.target != null) {
-            double x = result.target[0];
+            double x = result.target.center.x;
             double xc = m.cols() / 2;
             double alpha = 30 * (x - xc) / xc;
-            System.out.println("t=" + result.target[0] + "," + result.target[1]);
+            System.out.println("t=" + result.target.center.x + "," + result.target.center.y);
             System.out.println(alpha + " Degrees");
             NetworkTableInstance.getDefault().getEntry("/angle").forceSetDouble(-alpha);
         }

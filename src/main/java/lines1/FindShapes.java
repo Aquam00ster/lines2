@@ -9,11 +9,15 @@ import org.opencv.core.Scalar;
 
 public class FindShapes
 {
+    static class Target{
+        public Point center;
+    }
+
     //package of variables used to return final product
     static class Result {
         public Mat display;
         public Point[][] contours;
-        public double[] target;
+        public Target target;
     }
     private static final Size BLUR_SIZE = new Size(5,5);
 
@@ -93,10 +97,11 @@ public class FindShapes
                 if (c[i].x < c[min_i].x) min_i = i;
                 if (c[i].x > c[max_i].x) max_i = i;
             }
-            result.target = new double[2];
+            result.target = new Target();
             //finds average of x's and y's
-            result.target[0] = (c[min_i].x + c[max_i].x) / 2;                
-            result.target[1] = (c[min_i].y + c[max_i].y) / 2;
+            double cx = (c[min_i].x + c[max_i].x) / 2;
+            double cy = (c[min_i].y + c[max_i].y) / 2;
+            result.target.center = new Point(cx, cy);
         }
 
         return result;

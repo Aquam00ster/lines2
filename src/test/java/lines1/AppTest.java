@@ -23,8 +23,8 @@ class AppTest {
         int c = result.contours.length;
         assertEquals(1, c, "contours amount");
         assertNotNull(result.target);
-        assertEquals(result.target[0], 303, 10, "x");
-        assertEquals(result.target[1], 342, 10, "y");
+        assertEquals(result.target.center.x, 303, 10, "x");
+        assertEquals(result.target.center.y, 342, 10, "y");
     }
 
     @Test void contoursTest2() {
@@ -33,7 +33,7 @@ class AppTest {
         int c = result.contours.length;
         assertEquals(2, c, "contours amount");
         assertNotNull(result.target);
-        assertEquals(result.target[0], 268, 10, "x");
-        assertEquals(result.target[1], 211, 10, "y");
+        assertEquals(result.target.center.x, 268, 10, "x");
+        assertEquals(result.target.center.y, 211, 10, "y");
     }
 }
