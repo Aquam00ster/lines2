@@ -21,6 +21,16 @@ public class FindShapes
     }
     private static final Size BLUR_SIZE = new Size(5,5);
 
+    //calculates area of the contour
+    static double contourArea(Point[] c){
+        double sum = (c[0].y + c[c.length - 1].y) * (c[0].x - c[c.length - 1].x);
+        for(int i = 1; i < c.length; i++){
+            sum += (c[i].y + c[i - 1].y) * (c[i].x - c[i - 1].x);
+        }
+        return sum * .5;
+    }
+
+
     static double contourHeight(Point[] c){
         double min = c[0].y;
         double max = c[0].y;
@@ -35,9 +45,11 @@ public class FindShapes
         }
         return max - min;
     }
+
     //determines if the contour is large enough
     static boolean isGoodContour(Point[] c) {
         if (c.length < 4 || c.length > 12) return false;
+        if (Math.abs(contourArea(c)) < 300) return false;
         return true;
     }
 
