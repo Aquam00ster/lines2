@@ -9,6 +9,7 @@ import org.opencv.core.Scalar;
 
 public class FindShapes
 {
+    //package of variables used to return final product
     static class Result {
         public Mat display;
         public Point[][] contours;
@@ -16,11 +17,13 @@ public class FindShapes
     }
     private static final Size BLUR_SIZE = new Size(5,5);
 
+    //determines if the contour is large enough
     static boolean isGoodContour(Point[] c) {
         if (c.length < 4) return false;
         return true;
-     }
+    }
 
+    //modifies image and returns Result
     public static Result processImage(Mat original, boolean enableDisplay)
     {   
         Result result = new Result();
@@ -42,7 +45,6 @@ public class FindShapes
         List<MatOfPoint> contours = new ArrayList<>();
         Imgproc.findContours(filtered, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_NONE);
 
-        //System.out.println("contours count = " + contours.size());
         List<Point[]> found_contours = new ArrayList<>();
         for (int i = 0; i < contours.size(); i++) {
             //approximate contours
