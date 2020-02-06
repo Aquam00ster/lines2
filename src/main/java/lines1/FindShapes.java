@@ -21,9 +21,23 @@ public class FindShapes
     }
     private static final Size BLUR_SIZE = new Size(5,5);
 
+    static double contourHeight(Point[] c){
+        double min = c[0].y;
+        double max = c[0].y;
+        for (int i = 1; i < c.length; i++)
+        {
+            if (c[i].y < min){
+                min = c[i].y;
+            }
+            if (c[i].y > max){
+                max = c[i].y;
+            }
+        }
+        return max - min;
+    }
     //determines if the contour is large enough
     static boolean isGoodContour(Point[] c) {
-        if (c.length < 4) return false;
+        if (c.length < 4 || c.length > 12) return false;
         return true;
     }
 
@@ -53,8 +67,10 @@ public class FindShapes
         for (int i = 0; i < contours.size(); i++) {
             //approximate contours
             Point[] c = contours.get(i).toArray();
+            double h = contourHeight(c);
             MatOfPoint2f approx = new MatOfPoint2f();
-            Imgproc.approxPolyDP(new MatOfPoint2f(c),approx,3,true);
+            double approxEpsilon = h * .1;
+            Imgproc.approxPolyDP(new MatOfPoint2f(c),approx,approxEpsilon,true);
             c = approx.toArray();
             if (!isGoodContour(c)) {
                 continue;
