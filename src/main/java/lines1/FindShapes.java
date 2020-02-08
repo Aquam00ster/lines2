@@ -8,6 +8,11 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 
 public class FindShapes {
+    private static final int MAX_POINTS_CONTOUR = 12;
+    private static final int MIN_POINTS_CONTOUR = 4;
+    private static final int MIN_CONTOUR_AREA = 300;
+    private static final Size BLUR_SIZE = new Size(5, 5);
+
     static class Target {
         public Point center;
     }
@@ -18,8 +23,6 @@ public class FindShapes {
         public Point[][] contours;
         public Target target;
     }
-
-    private static final Size BLUR_SIZE = new Size(5, 5);
 
     // calculates area of the contour
     static double contourArea(Point[] c) {
@@ -53,13 +56,85 @@ public class FindShapes {
         return true;
     }
 
+    static boolean isKmeansFit(Point[] c) {
+        final int K = 4;
+
+        // Create matrix of coordinates
+        Mat p = new Mat(c.length, 2, CvType.CV_32FC1);
+        for (int i = 0; i < c.length; i++) {
+            p.put(i, 0, c[i].x);
+            p.put(i, 1, c[i].y);
+        }
+
+        // Create array of labels for later
+        Mat labels = new Mat(c.length, 1, CvType.CV_32SC1);
+        for (int i = 0; i < c.length; i++) {
+            labels.put(i, 0, 0);
+        }
+        Mat centers = new Mat();
+
+        TermCriteria criteria = new TermCriteria(TermCriteria.EPS | TermCriteria.MAX_ITER, 10, 0.1);
+        Core.kmeans(p, K, labels, criteria, 2, Core.KMEANS_PP_CENTERS, centers);
+
+        // compress contour labels
+        int[] compressedLabels = new int[c.length];
+        int k = 0;
+        int[] t = new int[1]; // make OpenCV get happy
+        for (int i = 0; i < labels.rows(); i++) {
+            labels.get(i, 0, t);
+            int label = t[0];
+            if (k == 0 || compressedLabels[k - 1] != label)
+                compressedLabels[k++] = label;
+        }
+        if (compressedLabels[0] == compressedLabels[k - 1])
+            k--;
+
+        // True if square shape
+        if (k == 4) {
+            Point p1 = getPointFromRow(centers, compressedLabels[0]);
+            Point p2 = getPointFromRow(centers, compressedLabels[1]);
+            Point p3 = getPointFromRow(centers, compressedLabels[2]);
+            Point p4 = getPointFromRow(centers, compressedLabels[3]);
+            double ratio = (p1.y - p3.y) / (p1.x - p3.x);
+            if (ratio < 1.5)
+                return false;
+            return isAngleAbout90(p1, p2, p3) && isAngleAbout90(p2, p3, p4) && isAngleAbout90(p3, p4, p1);
+        }
+
+        // True if half-hex shape
+        if (k == 6 && compressedLabels[1] == compressedLabels[5] && compressedLabels[2] == compressedLabels[4]) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static Point getPointFromRow(Mat m, int row) {
+        return new Point(m.get(row, 0)[0], m.get(row, 1)[0]);
+    }
+
+    private static boolean isAngleAbout90(Point p1, Point p2, Point p3) {
+        double x0 = p2.x - p1.x;
+        double y0 = p2.y - p1.y;
+        double x1 = p3.x - p2.x;
+        double y1 = p3.y - p2.y;
+
+        double alpha = 180 * Math.atan2(-x0 * y1 + x1 * y0, x0 * x1 + y0 * y1) / Math.PI;
+        double E = 15;
+        return Math.abs(Math.abs(alpha) - 90) < E;
+    }
+
     // determines if the contour is large enough
     static boolean isGoodContour(Point[] c, double width, double height) {
-        if (c.length < 4 || c.length > 12)
+        if (c.length < MIN_POINTS_CONTOUR || c.length > MAX_POINTS_CONTOUR)
             return false;
-        if (Math.abs(contourArea(c)) < 300)
+        if (!isInBounds(c, width, height))
             return false;
-        return isInBounds(c, width, height);
+        if (Math.abs(contourArea(c)) < MIN_CONTOUR_AREA)
+            return false;
+       if (!isKmeansFit(c))
+           return false;
+        return true;
     }
 
     // modifies image and returns Result
@@ -89,11 +164,11 @@ public class FindShapes {
             Point[] c = contours.get(i).toArray();
             double h = contourHeight(c);
             MatOfPoint2f approx = new MatOfPoint2f();
-            double approxEpsilon = h * .1;
+            double approxEpsilon = h * .05;
             Imgproc.approxPolyDP(new MatOfPoint2f(c), approx, approxEpsilon, true);
             c = approx.toArray();
             if (!isGoodContour(c, original.cols(), original.rows())) {
-                continue;
+               continue;
             }
 
             /*
