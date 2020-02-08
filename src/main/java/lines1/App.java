@@ -16,63 +16,60 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.vision.VisionThread;
 
 public class App {
-    static
-    {
+    static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
     private JFrame frame;
     private JLabel lbl;
 
-    public App()
-    {
+    public App() {
         frame = new JFrame();
-        frame.setLayout(new FlowLayout());        
-        frame.setSize(350, 250);     
+        frame.setLayout(new FlowLayout());
+        frame.setSize(350, 250);
         lbl = new JLabel();
         frame.add(lbl);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public void displayImage(Image img)
-    {   
+    public void displayImage(Image img) {
         ImageIcon icon = new ImageIcon(img);
-        frame.setSize(img.getWidth(null)+50, img.getHeight(null)+50);     
+        frame.setSize(img.getWidth(null) + 50, img.getHeight(null) + 50);
         lbl.setIcon(icon);
     }
 
-    public static BufferedImage Mat2BufferedImage(Mat m)
-    {
+    public static BufferedImage Mat2BufferedImage(Mat m) {
         int type = BufferedImage.TYPE_BYTE_GRAY;
-        if (m.channels() > 1)
-        {
+        if (m.channels() > 1) {
             type = BufferedImage.TYPE_3BYTE_BGR;
         }
-        int bufferSize = m.channels()*m.cols()*m.rows();
+        int bufferSize = m.channels() * m.cols() * m.rows();
         byte[] b = new byte[bufferSize];
         m.get(0, 0, b); // get all the pixels
         BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
         final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-        System.arraycopy(b, 0, targetPixels, 0, b.length);  
+        System.arraycopy(b, 0, targetPixels, 0, b.length);
         return image;
     }
 
     static void hackCameraExposure(int dev) {
         if (!new VideoCapture(dev).set(Videoio.CV_CAP_PROP_EXPOSURE, -400)) {
-            System.out.println("LifeCam hack did not worked"); 
+            System.out.println("LifeCam hack did not worked");
         }
     }
 
     static int findLifeCam() {
-        for (UsbCameraInfo i: UsbCamera.enumerateUsbCameras()) {
-            if (i.path.contains("vid_045e")) return i.dev;
+        for (UsbCameraInfo i : UsbCamera.enumerateUsbCameras()) {
+            if (i.path.contains("vid_045e"))
+                return i.dev;
         }
         System.out.println("LifeCam not found");
         return 0;
     }
 
     static Mat m = null;
+
     public static void main(String[] args) throws Exception {
         App app = new App();
 
@@ -85,11 +82,10 @@ public class App {
         });
         vt.start();
 
-        while (true)
-        {
+        while (true) {
             if (m != null) {
-            BufferedImage bi = Mat2BufferedImage(m);
-            app.displayImage(bi);
+                BufferedImage bi = Mat2BufferedImage(m);
+                app.displayImage(bi);
             }
             Thread.sleep(50);
         }
