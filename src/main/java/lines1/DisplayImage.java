@@ -1,6 +1,5 @@
 package lines1;
 
-import lines1.FindShapes;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.*;
 import java.awt.*;
