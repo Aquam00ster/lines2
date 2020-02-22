@@ -33,14 +33,14 @@ dependencies {
 
 task runDisplay(type:JavaExec) {
     dependsOn classes //, extractTestJNI
-    main = 'lines1.DisplayImage'
+    main = 'team2773.find_targets.DisplayImage'
     classpath = sourceSets.main.runtimeClasspath
     environment "PATH", System.getenv('PATH') + System.getProperty("path.separator") + "$buildDir/tmp/jniExtractDir"
 }
 
 task runStream(type:JavaExec) {
     dependsOn classes //, extractTestJNI
-    main = 'lines1.App'
+    main = 'team2773.find_targets.App'
     classpath = sourceSets.main.runtimeClasspath
     environment "PATH", System.getenv('PATH') + System.getProperty("path.separator") + "$buildDir/tmp/jniExtractDir"
 }
